@@ -20,14 +20,14 @@ jobs:
 
       - name: Copy repo to EC2
         run: |
-          rsync -avz --delete --exclude='.git*' ./ ec2-user@13.60.246.177:/home/ec2-user/micros/
+          rsync -avz --delete --exclude='.git*' ./ ubuntu@13.60.246.177:/home/ubuntu/micros/
         env:
           RSYNC_RSH: ssh
 
       - name: SSH and Deploy on EC2
         run: |
-          ssh ec2-user@13.60.246.177 << 'EOF'
-            cd /home/ec2-user/micros
+          ssh ubuntu@13.60.246.177 << 'EOF'
+            cd /home/ubuntu/micros
             docker-compose down
             docker-compose up -d --build
           EOF
