@@ -1,0 +1,34 @@
+name: Build and Deploy to EC2
+
+on:
+  push:
+    branches:
+      - main    # or your deployment branch
+
+jobs:
+  build_and_deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up SSH key
+      uses: webfactory/ssh-agent@v0.5.4
+      with:
+        ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
+
+    - name: Copy files to EC2
+      run: |
+        rsync -avz --delete --exclude='.git*' ./ ec2-user@13.60.246.177:/home/ubuntu/microservices-app/
+      # Replace ec2-user and IP accordingly
+
+    - name: SSH and run docker-compose
+      run: |
+        ssh ec2-user@YOUR_EC2_PUBLIC_IP << 'EOF'
+          cd /home/ec2-user/microservices-app/
+          docker-compose down
+          docker-compose pull || true   # if you use remote images, else optional
+          docker-compose build
+          docker-compose up -d
+        EOF
