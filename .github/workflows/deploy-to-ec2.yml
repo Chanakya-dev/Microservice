@@ -18,6 +18,11 @@ jobs:
         with:
           ssh-private-key: ${{ secrets.EC2_SSH_KEY }}
 
+      - name: Add EC2 Host to known_hosts
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H 13.60.246.177 >> ~/.ssh/known_hosts
+
       - name: Copy repo to EC2
         run: |
           rsync -avz --delete --exclude='.git*' ./ ubuntu@13.60.246.177:/home/ubuntu/micros/
